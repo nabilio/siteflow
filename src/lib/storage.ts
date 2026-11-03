@@ -1,12 +1,12 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import { prisma } from "./db";
 import { slugify } from "./utils";
 
-export function uploadRoot() {
-  const dir = process.env.UPLOAD_DIR || "./uploads";
-  return path.isAbsolute(dir) ? dir : path.join(process.cwd(), dir);
-}
-
+/**
+ * Stockage des médias EN BASE DE DONNÉES (table MediaData).
+ * Raison : sur un hébergement mutualisé, le dossier de l'application est remplacé à chaque déploiement ;
+ * la base, elle, est conservée et sauvegardée avec le reste.
+ * L'URL publique reste /uploads/<siteId>/<fichier>.
+ */
 export const ALLOWED_MIME: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
@@ -20,28 +20,23 @@ export const ALLOWED_MIME: Record<string, string> = {
   "image/vnd.microsoft.icon": ".ico",
 };
 
-export const MAX_UPLOAD = 50 * 1024 * 1024; // 50 Mo
+export const MAX_UPLOAD = 20 * 1024 * 1024; // 20 Mo (limite max_allowed_packet MySQL mutualisé)
 
 export async function saveUpload(siteId: string, file: File) {
   const ext = ALLOWED_MIME[file.type];
   if (!ext) throw new Error(`Type de fichier non autorisé : ${file.type}`);
-  if (file.size > MAX_UPLOAD) throw new Error("Fichier trop volumineux (max 50 Mo)");
+  if (file.size > MAX_UPLOAD) throw new Error("Fichier trop volumineux (max 20 Mo). Compressez la vidéo ou l'image.");
   const base = slugify(file.name.replace(/\.[^.]+$/, "")) || "fichier";
   const name = `${base}-${Date.now().toString(36)}${ext}`;
-  const dir = path.join(uploadRoot(), siteId);
-  await fs.mkdir(dir, { recursive: true });
   const buf = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path.join(dir, name), buf);
-  return { url: `/uploads/${siteId}/${name}`, name: file.name, mime: file.type, size: file.size };
-}
-
-export async function deleteUpload(url: string) {
-  if (!url.startsWith("/uploads/")) return;
-  const rel = url.replace(/^\/uploads\//, "");
-  if (rel.includes("..")) return;
-  try {
-    await fs.unlink(path.join(uploadRoot(), rel));
-  } catch {
-    /* déjà supprimé */
-  }
+  return prisma.media.create({
+    data: {
+      siteId,
+      url: `/uploads/${siteId}/${name}`,
+      name: file.name,
+      mime: file.type,
+      size: file.size,
+      data: { create: { data: buf } },
+    },
+  });
 }

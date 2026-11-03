@@ -152,6 +152,16 @@ model Media {
   mime      String
   size      Int
   createdAt DateTime @default(now())
+  data      MediaData?
+
+  @@index([url])
+}
+
+/// Contenu binaire des médias : stocké en base pour survivre aux redéploiements (hébergement mutualisé).
+model MediaData {
+  mediaId String @id
+  media   Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  data    Bytes  @db.LongBlob
 }
 
 model Message {

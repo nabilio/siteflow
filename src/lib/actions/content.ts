@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { assertSiteAccess } from "@/lib/studio";
 import { slugify } from "@/lib/utils";
-import { deleteUpload } from "@/lib/storage";
 import { hashPassword } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
 
@@ -130,7 +129,6 @@ export async function deleteMediaAction(fd: FormData) {
   await assertSiteAccess(siteId);
   const m = await prisma.media.findUnique({ where: { id: s(fd, "id") } });
   if (m && m.siteId === siteId) {
-    await deleteUpload(m.url);
     await prisma.media.delete({ where: { id: m.id } });
   }
   revalidatePath(s(fd, "base"));

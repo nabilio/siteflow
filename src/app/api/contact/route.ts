@@ -1,3 +1,4 @@
+import { publicUrl } from "@/lib/url";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
@@ -22,5 +23,5 @@ export async function POST(req: Request) {
     },
   });
   const back = String(form.get("back") || "/contact");
-  return NextResponse.redirect(new URL(`${back}${back.includes("?") ? "&" : "?"}envoye=1#contact`, req.url), 303);
+  return NextResponse.redirect(publicUrl(req, `${back}${back.includes("?") ? "&" : "?"}envoye=1#contact`), 303);
 }

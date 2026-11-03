@@ -10,7 +10,7 @@ export default async function MediaPage({ params }: { params: Promise<{ id: stri
   const total = media.reduce((a, m) => a + m.size, 0);
   return (
     <main className="space-y-6">
-      <div><h1 className="text-2xl font-bold">Médias</h1><p className="text-sm text-slate-500">{media.length} fichier{media.length > 1 ? "s" : ""} · {(total / 1024 / 1024).toFixed(1)} Mo. Images, PDF et vidéos (max 50 Mo). Utilisez uniquement des visuels dont vous détenez les droits.</p></div>
+      <div><h1 className="text-2xl font-bold">Médias</h1><p className="text-sm text-slate-500">{media.length} fichier{media.length > 1 ? "s" : ""} · {(total / 1024 / 1024).toFixed(1)} Mo. Images, PDF et vidéos (max 20 Mo). Utilisez uniquement des visuels dont vous détenez les droits.</p></div>
       <Uploader siteId={site.id} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         {media.map((m) => (

@@ -1,3 +1,4 @@
+import { publicUrl } from "@/lib/url";
 import { NextResponse } from "next/server";
 import { getSession, isStaff } from "@/lib/auth";
 import { importZip } from "@/lib/import-zip";
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
   if (!(file instanceof File)) return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
   try {
     const site = await importZip(Buffer.from(await file.arrayBuffer()), { domain: null });
-    return NextResponse.redirect(new URL(`/studio/sites/${site.id}`, req.url), 303);
+    return NextResponse.redirect(publicUrl(req, `/studio/sites/${site.id}`), 303);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Erreur" }, { status: 400 });
   }

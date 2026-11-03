@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start -p ${PORT:-3020}",
+    "build": "node scripts/embed-migrations.mjs && prisma generate && next build",
+    "start": "node scripts/start.mjs",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
@@ -13,7 +13,7 @@
     "db:studio": "prisma studio",
     "site:export": "tsx scripts/export-site.ts",
     "site:import": "tsx scripts/import-site.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "node scripts/embed-migrations.mjs && tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

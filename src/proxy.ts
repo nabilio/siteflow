@@ -1,3 +1,4 @@
+import { publicUrl } from "@/lib/url";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
@@ -32,9 +33,7 @@ export function proxy(req: NextRequest) {
   }
   if (p === "/studio" || p.startsWith("/studio/")) {
     // Le Studio n'est pas exposé sur les domaines clients
-    const target = url.clone();
-    target.pathname = "/admin";
-    return NextResponse.redirect(target);
+    return NextResponse.redirect(publicUrl(req, "/admin"));
   }
 
   const target = url.clone();
