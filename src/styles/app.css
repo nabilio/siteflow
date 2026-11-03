@@ -40,3 +40,12 @@ body { background: #f8fafc; color: #0f172a; font-family: var(--font-sans); }
 
 @keyframes sf-fade { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: none; } }
 .sf-fade { animation: sf-fade .6s ease both; }
+
+/* ---------- Tons de sections ---------- */
+.site .tone-dark .text-slate-500, .site .tone-dark .text-slate-600, .site .tone-dark .text-slate-700 { color: rgba(255,255,255,.78); }
+.site .tone-dark .cardx { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); color: #fff; box-shadow: none; }
+.site .tone-dark .cardx .text-slate-500, .site .tone-dark .cardx .text-slate-600, .site .tone-dark .cardx .text-slate-700 { color: rgba(255,255,255,.75); }
+.site .tone-dark .divide-slate-200 > :not(:last-child) { border-color: rgba(255,255,255,.14); }
+.site .tone-dark .text-primary { color: var(--site-accent); }
+.site .border-accent { border-color: var(--site-accent); }
+.site .bg-primary-soft { background: color-mix(in srgb, var(--site-primary) 12%, transparent); }

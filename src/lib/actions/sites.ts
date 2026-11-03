@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requireStaff, assertSiteAccess } from "@/lib/studio";
 import { templateById } from "@/lib/templates";
+import { buildSiteFromTemplate } from "@/lib/template-build";
 import { cleanDomain, slugify } from "@/lib/utils";
 import { hashPassword } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
@@ -25,50 +26,13 @@ export async function createSiteAction(formData: FormData) {
     domainTaken = true;
   }
 
-  const theme = {
-    ...tpl.theme,
-    primary: String(formData.get("primary") || tpl.theme.primary),
-    accent: String(formData.get("accent") || tpl.theme.accent),
-  };
-
-  const site = await prisma.site.create({
-    data: {
-      name,
-      slug,
-      domain,
-      template: tpl.id,
-      theme,
-      tagline: String(formData.get("tagline") || "") || null,
-      phone: String(formData.get("phone") || "") || null,
-      contactEmail: String(formData.get("contactEmail") || "") || null,
-      address: String(formData.get("address") || "") || null,
-      seoTitle: name,
-      pages: {
-        create: tpl.pages.map((p, i) => ({
-          slug: p.slug,
-          title: p.title,
-          navLabel: p.navLabel ?? null,
-          inNav: p.inNav ?? true,
-          order: i,
-          blocks: p.blocks as unknown as Prisma.InputJsonValue,
-        })),
-      },
-    },
+  const f = (k: string) => String(formData.get(k) || "").trim() || null;
+  const site = await buildSiteFromTemplate(tpl, {
+    name, slug, domain,
+    primary: String(formData.get("primary") || ""), accent: String(formData.get("accent") || ""),
+    tagline: f("tagline") ?? tpl.demo.tagline, phone: f("phone"), whatsapp: f("whatsapp"), contactEmail: f("contactEmail"), address: f("address"),
+    samples: formData.get("samples") === "on",
   });
-
-  // Produits d'exemple (si demandé)
-  if (formData.get("samples") === "on" && tpl.sampleProducts?.length) {
-    const cats = new Map<string, string>();
-    for (const sp of tpl.sampleProducts) {
-      let catId = cats.get(sp.category);
-      if (!catId) {
-        const c = await prisma.category.create({ data: { siteId: site.id, name: sp.category, slug: slugify(sp.category), order: cats.size } });
-        catId = c.id;
-        cats.set(sp.category, catId);
-      }
-      await prisma.product.create({ data: { siteId: site.id, categoryId: catId, name: sp.name, slug: slugify(sp.name), summary: sp.summary, featured: true } });
-    }
-  }
 
   // Compte client (optionnel)
   const clientEmail = String(formData.get("clientEmail") || "").trim().toLowerCase();

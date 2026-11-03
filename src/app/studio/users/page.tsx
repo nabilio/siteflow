@@ -6,7 +6,7 @@ export default async function UsersPage() {
   const session = await requireStaff();
   const [users, sites] = await Promise.all([
     prisma.user.findMany({ orderBy: [{ role: "asc" }, { createdAt: "asc" }], include: { site: { select: { name: true } } } }),
-    prisma.site.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.site.findMany({ where: { slug: { not: { startsWith: "tpl-" } } }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
   return (
     <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">

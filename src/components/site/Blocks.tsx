@@ -10,9 +10,16 @@ export type RenderCtx = { site: Site & { categories: Category[] }; base: string;
 
 const COLS: Record<string, string> = { "2": "sm:grid-cols-2", "3": "sm:grid-cols-2 lg:grid-cols-3", "4": "sm:grid-cols-2 lg:grid-cols-4" };
 
-function Section({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
+const TONES: Record<string, string> = {
+  white: "bg-white",
+  soft: "bg-slate-50",
+  dark: "bg-dark text-white tone-dark",
+  primary: "bg-primary text-white tone-dark",
+};
+function Section({ children, className = "", id, tone }: { children: React.ReactNode; className?: string; id?: string; tone?: string }) {
+  const cls = tone && TONES[tone] ? TONES[tone] : className;
   return (
-    <section id={id} className={`py-14 sm:py-20 ${className}`}>
+    <section id={id} className={`py-14 sm:py-20 ${cls}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">{children}</div>
     </section>
   );
@@ -86,7 +93,52 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
       const img = str(p.image);
       const video = str(p.videoUrl);
       const yt = video ? youtubeEmbed(video) : null;
+      const layout = str(p.layout, "left");
       const h = { md: "min-h-[420px]", lg: "min-h-[560px]", full: "min-h-[calc(100vh-64px)]" }[str(p.height, "lg")] || "min-h-[560px]";
+      const badges = list<{ text?: string }>(p.badges).filter((b) => b.text);
+      const buttons = (
+        <div className={`mt-8 flex flex-wrap gap-3 ${layout === "center" ? "justify-center" : ""}`}>
+          {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r btn-primary px-6 py-3 font-semibold shadow-lg">{str(p.ctaLabel)}</Link>}
+          {str(p.cta2Label) && <Link href={href(base, str(p.cta2Url))} className="r btn-outline px-6 py-3 font-semibold hover:bg-white/10">{str(p.cta2Label)}</Link>}
+        </div>
+      );
+      const chips = badges.length > 0 && (
+        <ul className={`mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium opacity-90 ${layout === "center" ? "justify-center" : ""}`}>
+          {badges.map((b, i) => <li key={i} className="flex items-center gap-2"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[11px] text-white">✓</span>{b.text}</li>)}
+        </ul>
+      );
+      const badge = str(p.badge) && <span className="mb-5 inline-block rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest backdrop-blur">{str(p.badge)}</span>;
+      if (layout === "split") {
+        const light = bool(p.light);
+        return (
+          <section className={`relative overflow-hidden ${light ? "bg-slate-50 text-slate-900" : "text-white"}`} style={light ? undefined : { background: "linear-gradient(135deg, var(--site-dark) 0%, var(--site-primary) 130%)" }}>
+            <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent opacity-20 blur-3xl" />
+            <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-primary opacity-30 blur-3xl" />
+            <div className="sf-fade relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:py-24">
+              <div>
+                {str(p.badge) && <span className={`mb-5 inline-block rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${light ? "bg-primary-soft text-primary" : "border border-white/30 bg-white/10"}`}>{str(p.badge)}</span>}
+                <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">{str(p.title)}</h1>
+                {str(p.subtitle) && <p className={`mt-5 max-w-xl text-lg sm:text-xl ${light ? "text-slate-600" : "text-white/85"}`}>{str(p.subtitle)}</p>}
+                <div className={`mt-8 flex flex-wrap gap-3`}>
+                  {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r btn-primary px-6 py-3 font-semibold shadow-lg">{str(p.ctaLabel)}</Link>}
+                  {str(p.cta2Label) && <Link href={href(base, str(p.cta2Url))} className={`r btn-outline px-6 py-3 font-semibold ${light ? "text-slate-800 hover:bg-slate-900/5" : "hover:bg-white/10"}`}>{str(p.cta2Label)}</Link>}
+                </div>
+                {chips}
+              </div>
+              <div className="relative">
+                <div className="r relative aspect-[4/3] overflow-hidden bg-white/5 shadow-2xl ring-1 ring-white/20">
+                  {img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={img} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-7xl opacity-40">🖼️</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
       return (
         <section className={`relative flex ${h} items-center overflow-hidden bg-dark text-white`}>
           {yt ? (
@@ -99,27 +151,31 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
           ) : (
             <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, var(--site-primary), var(--site-dark))" }} />
           )}
-          {bool(p.overlay) && (img || video) && <div className="absolute inset-0 bg-black/55" />}
-          <div className="sf-fade relative mx-auto w-full max-w-7xl px-4 py-20 sm:px-6">
-            <h1 className="max-w-3xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">{str(p.title)}</h1>
-            {str(p.subtitle) && <p className="mt-5 max-w-2xl text-lg text-white/85 sm:text-xl">{str(p.subtitle)}</p>}
-            <div className="mt-8 flex flex-wrap gap-3">
-              {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r btn-primary px-6 py-3 font-semibold">{str(p.ctaLabel)}</Link>}
-              {str(p.cta2Label) && <Link href={href(base, str(p.cta2Url))} className="r btn-outline px-6 py-3 font-semibold text-white hover:bg-white/10">{str(p.cta2Label)}</Link>}
-            </div>
+          {bool(p.overlay) && (img || video) && <div className="absolute inset-0" style={{ background: layout === "center" ? "rgba(0,0,0,.55)" : "linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.15) 100%)" }} />}
+          <div className={`sf-fade relative mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 ${layout === "center" ? "text-center" : ""}`}>
+            {badge}
+            <h1 className={`text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl ${layout === "center" ? "mx-auto max-w-4xl" : "max-w-3xl"}`}>{str(p.title)}</h1>
+            {str(p.subtitle) && <p className={`mt-5 text-lg text-white/85 sm:text-xl ${layout === "center" ? "mx-auto max-w-2xl" : "max-w-2xl"}`}>{str(p.subtitle)}</p>}
+            {buttons}
+            {chips}
           </div>
         </section>
       );
     }
     case "features": {
       const items = list(p.items);
+      const st = str(p.style, "cards");
       return (
-        <Section>
+        <Section tone={str(p.tone)}>
           <Title title={str(p.title)} intro={str(p.intro)} />
           <div className={`grid gap-6 ${COLS[str(p.columns, "3")] || COLS["3"]}`}>
             {items.map((it, i) => (
-              <div key={i} className="r border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="mb-3 text-3xl">{str(it.icon)}</div>
+              <div key={i} className={st === "plain" ? "px-2" : "cardx r border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"}>
+                {st === "icons" ? (
+                  <div className="r mb-4 flex h-14 w-14 items-center justify-center bg-primary/10 text-2xl" style={{ background: "color-mix(in srgb, var(--site-primary) 12%, transparent)" }}>{str(it.icon)}</div>
+                ) : (
+                  <div className="mb-3 text-3xl">{str(it.icon)}</div>
+                )}
                 <h3 className="text-lg font-semibold">{str(it.title)}</h3>
                 <p className="mt-2 text-slate-600">{str(it.text)}</p>
               </div>
@@ -130,10 +186,11 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
     }
     case "textImage": {
       const left = str(p.imageSide) === "left";
+      const bullets = list<{ text?: string }>(p.bullets).filter((b) => b.text);
       return (
-        <Section>
+        <Section tone={str(p.tone)}>
           <div className={`grid items-center gap-10 lg:grid-cols-2 ${left ? "" : "lg:[&>*:first-child]:order-2"}`}>
-            <div className="r aspect-[4/3] overflow-hidden bg-slate-100">
+            <div className="r aspect-[4/3] overflow-hidden bg-slate-100 shadow-xl ring-1 ring-black/5">
               {str(p.image) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={str(p.image)} alt="" className="h-full w-full object-cover" />
@@ -144,6 +201,11 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
             <div>
               <h2 className="text-3xl font-bold tracking-tight">{str(p.title)}</h2>
               <div className="prose-site mt-4 text-slate-700" dangerouslySetInnerHTML={{ __html: mdToHtml(str(p.text)) }} />
+              {bullets.length > 0 && (
+                <ul className="mt-5 space-y-2.5">
+                  {bullets.map((b, i) => <li key={i} className="flex items-start gap-3"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">✓</span><span>{b.text}</span></li>)}
+                </ul>
+              )}
               {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r btn-primary mt-6 inline-block px-5 py-2.5 font-semibold">{str(p.ctaLabel)}</Link>}
             </div>
           </div>
@@ -152,7 +214,7 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
     }
     case "richText":
       return (
-        <Section>
+        <Section tone={str(p.tone)}>
           <div className={bool(p.narrow) ? "mx-auto max-w-3xl" : ""}>
             {str(p.title) && <h2 className="mb-4 text-3xl font-bold tracking-tight">{str(p.title)}</h2>}
             <div className="prose-site text-slate-700" dangerouslySetInnerHTML={{ __html: mdToHtml(str(p.text)) }} />
@@ -165,7 +227,19 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
       return (
         <Section className="bg-slate-50">
           <Title title={str(p.title)} />
-          <Gallery items={items} autoplay={bool(p.autoplay)} interval={num(p.interval, 4)} />
+          {str(p.layout) === "grid" ? (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+              {items.map((it, i) => (
+                <figure key={i} className={`r group relative overflow-hidden bg-slate-100 ${i === 0 && items.length >= 5 ? "col-span-2 row-span-2" : ""}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={it.image} alt={it.caption || ""} className="aspect-[4/3] h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  {it.caption && <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-sm font-medium text-white">{it.caption}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          ) : (
+            <Gallery items={items} autoplay={bool(p.autoplay)} interval={num(p.interval, 4)} />
+          )}
         </Section>
       );
     }
@@ -236,12 +310,12 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
     case "stats": {
       const items = list(p.items);
       return (
-        <section className="bg-primary py-10 text-white">
-          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 text-center sm:px-6 lg:grid-cols-4">
+        <section className="bg-primary py-12 text-white">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 text-center sm:px-6 lg:grid-cols-4">
             {items.map((it, i) => (
-              <div key={i}>
-                <div className="text-3xl font-extrabold sm:text-4xl">{str(it.value)}</div>
-                <div className="mt-1 text-sm opacity-90">{str(it.label)}</div>
+              <div key={i} className="lg:border-l lg:border-white/20 lg:first:border-0">
+                <div className="text-4xl font-extrabold tracking-tight sm:text-5xl">{str(it.value)}</div>
+                <div className="mt-2 text-sm uppercase tracking-wide opacity-85">{str(it.label)}</div>
               </div>
             ))}
           </div>
@@ -250,13 +324,14 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
     }
     case "cta":
       return (
-        <section className="bg-accent py-14 text-white">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 text-center sm:px-6 md:flex-row md:text-left">
+        <section className="relative overflow-hidden py-16 text-white" style={{ background: "linear-gradient(120deg, var(--site-primary), var(--site-dark))" }}>
+          <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-accent opacity-30 blur-3xl" />
+          <div className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 text-center sm:px-6 md:flex-row md:text-left">
             <div>
-              <h2 className="text-3xl font-bold">{str(p.title)}</h2>
+              <h2 className="text-3xl font-bold sm:text-4xl">{str(p.title)}</h2>
               {str(p.text) && <p className="mt-2 text-lg opacity-90">{str(p.text)}</p>}
             </div>
-            {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r bg-white px-6 py-3 font-semibold text-slate-900 shadow hover:bg-slate-100">{str(p.ctaLabel)}</Link>}
+            {str(p.ctaLabel) && <Link href={href(base, str(p.ctaUrl))} className="r bg-accent px-7 py-3.5 font-semibold text-white shadow-lg hover:brightness-110">{str(p.ctaLabel)}</Link>}
           </div>
         </section>
       );
@@ -280,9 +355,9 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
     }
     case "faq":
       return (
-        <Section>
+        <Section tone={str(p.tone)}>
           <Title title={str(p.title)} />
-          <div className="mx-auto max-w-3xl divide-y divide-slate-200 r border border-slate-200 bg-white">
+          <div className="cardx mx-auto max-w-3xl divide-y divide-slate-200 r border border-slate-200 bg-white">
             {list(p.items).map((it, i) => (
               <details key={i} className="group p-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
@@ -318,6 +393,154 @@ export async function RenderBlock({ block, ctx }: { block: Block; ctx: RenderCtx
             ))}
           </div>
         </Section>
+      );
+    }
+    case "steps": {
+      const items = list(p.items);
+      return (
+        <Section tone={str(p.tone)}>
+          <Title title={str(p.title)} intro={str(p.intro)} />
+          <ol className={`grid gap-8 ${items.length === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"}`}>
+            {items.map((it, i) => (
+              <li key={i} className="relative">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-extrabold text-white shadow-md" style={{ outline: "6px solid color-mix(in srgb, var(--site-primary) 15%, transparent)" }}>{i + 1}</span>
+                  <span aria-hidden className="hidden h-px flex-1 bg-slate-300 md:block" style={{ opacity: i === items.length - 1 ? 0 : 1 }} />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{str(it.title)}</h3>
+                <p className="mt-2 text-slate-600">{str(it.text)}</p>
+              </li>
+            ))}
+          </ol>
+        </Section>
+      );
+    }
+    case "testimonials": {
+      const items = list(p.items);
+      if (!items.length) return null;
+      return (
+        <Section tone={str(p.tone) || "soft"}>
+          <Title title={str(p.title)} />
+          <div className={`grid gap-6 ${items.length >= 3 ? "md:grid-cols-3" : items.length === 2 ? "md:grid-cols-2" : "mx-auto max-w-2xl"}`}>
+            {items.map((it, i) => (
+              <figure key={i} className="cardx r relative flex flex-col border border-slate-200 bg-white p-7 shadow-sm">
+                <span aria-hidden className="absolute right-6 top-3 font-serif text-7xl leading-none text-primary opacity-15">”</span>
+                <div className="mb-3 text-lg tracking-widest text-accent">★★★★★</div>
+                <blockquote className="flex-1 text-slate-700">{str(it.quote)}</blockquote>
+                <figcaption className="mt-5 flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-bold text-white">{str(it.name).charAt(0).toUpperCase()}</span>
+                  <span><span className="block font-semibold">{str(it.name)}</span><span className="block text-sm text-slate-500">{str(it.role)}</span></span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </Section>
+      );
+    }
+    case "pricing": {
+      const items = list(p.items);
+      return (
+        <Section tone={str(p.tone)}>
+          <Title title={str(p.title)} intro={str(p.intro)} />
+          <div className={`mx-auto grid items-stretch gap-6 ${items.length >= 3 ? "max-w-6xl md:grid-cols-3" : "max-w-4xl md:grid-cols-2"}`}>
+            {items.map((it, i) => {
+              const hi = bool(it.highlight);
+              const feats = str(it.features).split("\n").map((x) => x.trim()).filter(Boolean);
+              return (
+                <div key={i} className={`cardx r relative flex flex-col border p-7 ${hi ? "border-transparent bg-dark text-white shadow-2xl md:-my-3" : "border-slate-200 bg-white shadow-sm"}`}>
+                  {hi && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">Recommandé</span>}
+                  <h3 className="text-lg font-semibold">{str(it.name)}</h3>
+                  <div className="mt-3 flex items-baseline gap-1"><span className="text-4xl font-extrabold tracking-tight">{str(it.price)}</span><span className={`text-sm ${hi ? "text-white/70" : "text-slate-500"}`}>{str(it.period)}</span></div>
+                  <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+                    {feats.map((f, k) => <li key={k} className="flex items-start gap-2.5"><span className="mt-0.5 text-accent">✓</span><span>{f}</span></li>)}
+                  </ul>
+                  {str(it.ctaLabel) && <Link href={href(base, str(it.ctaUrl))} className={`r mt-7 px-5 py-3 text-center font-semibold ${hi ? "bg-accent text-white hover:brightness-110" : "btn-primary"}`}>{str(it.ctaLabel)}</Link>}
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      );
+    }
+    case "priceList": {
+      const items = list(p.items);
+      let lastGroup = "";
+      return (
+        <Section tone={str(p.tone)}>
+          <Title title={str(p.title)} intro={str(p.intro)} />
+          <div className="mx-auto max-w-3xl">
+            {items.map((it, i) => {
+              const g = str(it.group);
+              const showG = g && g !== lastGroup;
+              if (g) lastGroup = g;
+              return (
+                <div key={i}>
+                  {showG && <h3 className="mb-2 mt-10 border-b-2 border-accent pb-2 text-xl font-bold text-primary first:mt-0">{g}</h3>}
+                  <div className="flex items-baseline gap-3 py-3">
+                    <div className="min-w-0">
+                      <div className="font-semibold">{str(it.name)}</div>
+                      {str(it.text) && <div className="text-sm text-slate-500">{str(it.text)}</div>}
+                    </div>
+                    <span aria-hidden className="mb-1 min-w-4 flex-1 border-b border-dotted border-slate-300" />
+                    <div className="shrink-0 font-bold text-primary">{str(it.price)}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      );
+    }
+    case "hours": {
+      const items = list(p.items);
+      return (
+        <Section tone={str(p.tone)}>
+          <div className={`grid items-center gap-10 ${str(p.image) ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
+            {str(p.image) && (
+              <div className="r aspect-[4/3] overflow-hidden bg-slate-100 shadow-xl ring-1 ring-black/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={str(p.image)} alt="" className="h-full w-full object-cover" />
+              </div>
+            )}
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">{str(p.title)}</h2>
+              {str(p.text) && <p className="mt-3 text-slate-600">{str(p.text)}</p>}
+              <div className="cardx r mt-6 divide-y divide-slate-200 border border-slate-200 bg-white shadow-sm">
+                {items.map((it, i) => (
+                  <div key={i} className="flex items-center justify-between gap-4 px-5 py-3">
+                    <span className="font-medium">{str(it.day)}</span>
+                    <span className="text-slate-600">{str(it.time)}</span>
+                  </div>
+                ))}
+              </div>
+              {(site.address || site.phone) && (
+                <div className="mt-5 space-y-1 text-sm text-slate-600">
+                  {site.address && <div>📍 {site.address}</div>}
+                  {site.phone && <div>📞 <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="font-semibold">{site.phone}</a></div>}
+                </div>
+              )}
+            </div>
+          </div>
+        </Section>
+      );
+    }
+    case "badges": {
+      const items = list(p.items).filter((i) => str(i.text) || str(i.image));
+      if (!items.length) return null;
+      return (
+        <section className="border-y border-slate-200 bg-white py-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            {str(p.title) && <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{str(p.title)}</p>}
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+              {items.map((it, i) => str(it.image) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={i} src={str(it.image)} alt={str(it.text)} className="h-9 w-auto opacity-70 grayscale" />
+              ) : (
+                <span key={i} className="text-lg font-extrabold tracking-wide text-slate-400">{str(it.text)}</span>
+              ))}
+            </div>
+          </div>
+        </section>
       );
     }
     case "contact":

@@ -52,3 +52,9 @@ export async function ensureAdmin() {
   await prisma.user.create({ data: { email, name: "Super admin", role: "SUPERADMIN", passwordHash: await bcrypt.hash(password, 10) } });
   console.log(`[siteflow] superadmin créé : ${email}`);
 }
+
+/** Met à jour les sites de démonstration des modèles (aperçu dans le Studio). */
+export async function syncTemplateDemos() {
+  const { ensureTemplateDemos } = await import("./template-build");
+  await ensureTemplateDemos();
+}

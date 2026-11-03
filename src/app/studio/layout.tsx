@@ -25,6 +25,7 @@ export default async function StudioLayout({ children }: { children: React.React
             {staff && !clientDomain && (
               <>
                 <Link href="/studio" className="rounded-lg px-2 py-1.5 font-medium text-slate-600 hover:bg-slate-100 sm:px-3">Sites</Link>
+                <Link href="/studio/templates" className="rounded-lg px-2 py-1.5 font-medium text-slate-600 hover:bg-slate-100 sm:px-3">Modèles</Link>
                 <Link href="/studio/users" className="hidden rounded-lg px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100 md:block">Utilisateurs</Link>
                 <Link href="/studio/guide" className="hidden rounded-lg px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100 md:block">Guide</Link>
               </>

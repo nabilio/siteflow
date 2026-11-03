@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireStaff } from "@/lib/studio";
 import { templateById } from "@/lib/templates";
 import { formatDate } from "@/lib/utils";
+import { DEMO_PREFIX } from "@/lib/template-build";
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: "Brouillon", cls: "bg-amber-100 text-amber-800" },
@@ -13,6 +14,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 export default async function StudioHome() {
   await requireStaff();
   const sites = await prisma.site.findMany({
+    where: { slug: { not: { startsWith: DEMO_PREFIX } } },
     orderBy: { updatedAt: "desc" },
     include: { _count: { select: { pages: true, products: true, messages: { where: { read: false } } } } },
   });
@@ -31,6 +33,7 @@ export default async function StudioHome() {
             </label>
             <button className="sf-btn-secondary">Lancer l'import</button>
           </form>
+          <Link href="/studio/templates" className="sf-btn-secondary">🎨 Modèles</Link>
           <Link href="/studio/sites/new" className="sf-btn-primary">+ Nouveau site</Link>
         </div>
       </div>

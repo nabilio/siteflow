@@ -46,6 +46,9 @@ export const BLOCKS: BlockDef[] = [
     description: "Grand titre, sous-titre, boutons et image ou vidéo de fond.",
     icon: "🖼️",
     fields: [
+      { key: "layout", label: "Disposition", type: "select", options: [
+        { value: "left", label: "Texte à gauche (image en fond)" }, { value: "center", label: "Texte centré (image en fond)" }, { value: "split", label: "Texte + grande image à droite" } ], default: "left" },
+      { key: "badge", label: "Petit label au-dessus du titre", type: "text" },
       { key: "title", label: "Titre", type: "text", default: "Votre partenaire de confiance" },
       { key: "subtitle", label: "Sous-titre", type: "textarea", default: "Une phrase qui résume votre activité et ce que vous apportez à vos clients." },
       { key: "image", label: "Image de fond", type: "image" },
@@ -55,6 +58,10 @@ export const BLOCKS: BlockDef[] = [
       { key: "cta2Label", label: "Bouton secondaire", type: "text", default: "Nous contacter" },
       { key: "cta2Url", label: "Lien secondaire", type: "url", default: "/contact" },
       { key: "overlay", label: "Assombrir l'image", type: "boolean", default: true },
+      { key: "badges", label: "Points de réassurance (puces)", type: "list", fields: [
+        { key: "text", label: "Texte", type: "text" },
+      ], default: [] },
+      { key: "light", label: "Fond clair (disposition « Texte + image » uniquement)", type: "boolean", default: false },
       { key: "height", label: "Hauteur", type: "select", options: [
         { value: "md", label: "Moyenne" }, { value: "lg", label: "Grande" }, { value: "full", label: "Plein écran" } ], default: "lg" },
     ],
@@ -69,6 +76,10 @@ export const BLOCKS: BlockDef[] = [
       { key: "intro", label: "Introduction", type: "textarea" },
       { key: "columns", label: "Colonnes", type: "select", options: [
         { value: "2", label: "2" }, { value: "3", label: "3" }, { value: "4", label: "4" } ], default: "3" },
+      { key: "style", label: "Style", type: "select", options: [
+        { value: "cards", label: "Cartes" }, { value: "icons", label: "Icônes dans une pastille" }, { value: "plain", label: "Sobre (sans cadre)" } ], default: "cards" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
       { key: "items", label: "Arguments", type: "list", fields: [
         { key: "icon", label: "Icône (emoji)", type: "text", default: "✅" },
         { key: "title", label: "Titre", type: "text" },
@@ -93,6 +104,11 @@ export const BLOCKS: BlockDef[] = [
         { value: "right", label: "Droite" }, { value: "left", label: "Gauche" } ], default: "right" },
       { key: "ctaLabel", label: "Bouton (optionnel)", type: "text" },
       { key: "ctaUrl", label: "Lien du bouton", type: "url" },
+      { key: "bullets", label: "Liste à puces (optionnel)", type: "list", fields: [
+        { key: "text", label: "Texte", type: "text" },
+      ], default: [] },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
     ],
   },
   {
@@ -104,6 +120,8 @@ export const BLOCKS: BlockDef[] = [
       { key: "title", label: "Titre", type: "text" },
       { key: "text", label: "Contenu", type: "richtext", default: "Votre texte ici." },
       { key: "narrow", label: "Largeur réduite (lecture)", type: "boolean", default: true },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
     ],
   },
   {
@@ -117,7 +135,9 @@ export const BLOCKS: BlockDef[] = [
         { key: "image", label: "Image", type: "image" },
         { key: "caption", label: "Légende", type: "text" },
       ], default: [] },
-      { key: "autoplay", label: "Défilement automatique", type: "boolean", default: true },
+      { key: "layout", label: "Affichage", type: "select", options: [
+        { value: "carousel", label: "Carrousel" }, { value: "grid", label: "Mosaïque" } ], default: "carousel" },
+      { key: "autoplay", label: "Défilement automatique (carrousel)", type: "boolean", default: true },
       { key: "interval", label: "Intervalle (secondes)", type: "number", default: 4 },
     ],
   },
@@ -194,6 +214,8 @@ export const BLOCKS: BlockDef[] = [
     icon: "❓",
     fields: [
       { key: "title", label: "Titre", type: "text", default: "Questions fréquentes" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
       { key: "items", label: "Questions", type: "list", fields: [
         { key: "q", label: "Question", type: "text" },
         { key: "a", label: "Réponse", type: "textarea" },
@@ -214,6 +236,123 @@ export const BLOCKS: BlockDef[] = [
         { key: "image", label: "Photo / logo", type: "image" },
         { key: "name", label: "Nom", type: "text" },
         { key: "role", label: "Fonction", type: "text" },
+      ], default: [] },
+    ],
+  },
+  {
+    type: "steps",
+    label: "Étapes / processus",
+    description: "Étapes numérotées (comment ça marche, notre méthode…).",
+    icon: "🪜",
+    fields: [
+      { key: "title", label: "Titre", type: "text", default: "Comment ça marche" },
+      { key: "intro", label: "Introduction", type: "textarea" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
+      { key: "items", label: "Étapes", type: "list", fields: [
+        { key: "title", label: "Titre", type: "text" },
+        { key: "text", label: "Texte", type: "textarea" },
+      ], default: [
+        { title: "Vous nous contactez", text: "Décrivez votre besoin en quelques lignes." },
+        { title: "Nous étudions", text: "Nous revenons vers vous avec une proposition claire." },
+        { title: "Nous réalisons", text: "Mise en œuvre rapide, suivi et livraison." },
+      ] },
+    ],
+  },
+  {
+    type: "testimonials",
+    label: "Témoignages",
+    description: "Avis de clients avec nom et fonction.",
+    icon: "💬",
+    fields: [
+      { key: "title", label: "Titre", type: "text", default: "Ils nous font confiance" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
+      { key: "items", label: "Témoignages", type: "list", fields: [
+        { key: "quote", label: "Citation", type: "textarea" },
+        { key: "name", label: "Nom", type: "text" },
+        { key: "role", label: "Fonction / entreprise", type: "text" },
+      ], default: [
+        { quote: "Un service réactif et un travail soigné. Nous recommandons.", name: "Prénom N.", role: "Client" },
+      ] },
+    ],
+  },
+  {
+    type: "pricing",
+    label: "Offres / tarifs",
+    description: "Cartes d'offres avec prix, liste d'avantages et bouton.",
+    icon: "🏷️",
+    fields: [
+      { key: "title", label: "Titre", type: "text", default: "Nos offres" },
+      { key: "intro", label: "Introduction", type: "textarea" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
+      { key: "items", label: "Offres", type: "list", fields: [
+        { key: "name", label: "Nom de l'offre", type: "text" },
+        { key: "price", label: "Prix", type: "text" },
+        { key: "period", label: "Période (ex. / mois)", type: "text" },
+        { key: "features", label: "Avantages (un par ligne)", type: "textarea" },
+        { key: "highlight", label: "Mettre en avant", type: "boolean" },
+        { key: "ctaLabel", label: "Bouton", type: "text", default: "Choisir" },
+        { key: "ctaUrl", label: "Lien", type: "url", default: "/contact" },
+      ], default: [
+        { name: "Essentiel", price: "990 DH", period: "", features: "Prestation de base\nSuivi par e-mail", highlight: false, ctaLabel: "Choisir", ctaUrl: "/contact" },
+        { name: "Premium", price: "1 990 DH", period: "", features: "Tout l'essentiel\nSuivi prioritaire\nRapport détaillé", highlight: true, ctaLabel: "Choisir", ctaUrl: "/contact" },
+      ] },
+    ],
+  },
+  {
+    type: "priceList",
+    label: "Carte / liste de prix",
+    description: "Liste claire de prestations ou de plats avec prix (menu, soins, tarifs).",
+    icon: "🍽️",
+    fields: [
+      { key: "title", label: "Titre", type: "text", default: "Nos tarifs" },
+      { key: "intro", label: "Introduction", type: "textarea" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
+      { key: "items", label: "Lignes", type: "list", fields: [
+        { key: "group", label: "Rubrique (optionnel, ex. Entrées)", type: "text" },
+        { key: "name", label: "Nom", type: "text" },
+        { key: "text", label: "Description", type: "text" },
+        { key: "price", label: "Prix", type: "text" },
+      ], default: [
+        { group: "", name: "Prestation 1", text: "Courte description", price: "200 DH" },
+        { group: "", name: "Prestation 2", text: "Courte description", price: "350 DH" },
+      ] },
+    ],
+  },
+  {
+    type: "hours",
+    label: "Horaires & infos pratiques",
+    description: "Horaires d'ouverture à côté d'une image ou d'un texte d'accueil.",
+    icon: "🕒",
+    fields: [
+      { key: "title", label: "Titre", type: "text", default: "Horaires d'ouverture" },
+      { key: "text", label: "Texte", type: "textarea" },
+      { key: "image", label: "Image (optionnelle)", type: "image" },
+      { key: "tone", label: "Fond de la section", type: "select", options: [
+        { value: "", label: "Automatique" }, { value: "white", label: "Blanc" }, { value: "soft", label: "Gris clair" }, { value: "dark", label: "Foncé" }, { value: "primary", label: "Couleur principale" } ], default: "" },
+      { key: "items", label: "Horaires", type: "list", fields: [
+        { key: "day", label: "Jour(s)", type: "text" },
+        { key: "time", label: "Horaires", type: "text" },
+      ], default: [
+        { day: "Lundi – Vendredi", time: "9h00 – 18h00" },
+        { day: "Samedi", time: "9h00 – 13h00" },
+        { day: "Dimanche", time: "Fermé" },
+      ] },
+    ],
+  },
+  {
+    type: "badges",
+    label: "Bandeau de logos / mentions",
+    description: "Une ligne de marques, certifications ou mentions (texte ou logos).",
+    icon: "🏅",
+    fields: [
+      { key: "title", label: "Légende (optionnelle)", type: "text" },
+      { key: "items", label: "Éléments", type: "list", fields: [
+        { key: "image", label: "Logo (optionnel)", type: "image" },
+        { key: "text", label: "Texte", type: "text" },
       ], default: [] },
     ],
   },

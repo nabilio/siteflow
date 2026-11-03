@@ -2,12 +2,13 @@
 import { useState } from "react";
 import type { Theme } from "@/lib/templates";
 
-type T = { id: string; name: string; sector: string; description: string; theme: Theme; pages: string[]; hasSamples: boolean };
+type T = { id: string; name: string; sector: string; description: string; theme: Theme; pages: string[]; highlights: string[]; preview: string; hasSamples: boolean };
 
-export function NewSiteForm({ templates, action }: { templates: T[]; action: (fd: FormData) => Promise<void> }) {
-  const [tpl, setTpl] = useState(templates[0]);
-  const [primary, setPrimary] = useState(templates[0].theme.primary);
-  const [accent, setAccent] = useState(templates[0].theme.accent);
+export function NewSiteForm({ templates, action, initial }: { templates: T[]; action: (fd: FormData) => Promise<void>; initial?: string }) {
+  const first = templates.find((t) => t.id === initial) ?? templates[0];
+  const [tpl, setTpl] = useState(first);
+  const [primary, setPrimary] = useState(first.theme.primary);
+  const [accent, setAccent] = useState(first.theme.accent);
   const [name, setName] = useState("");
   const [step, setStep] = useState(1);
 
@@ -28,19 +29,24 @@ export function NewSiteForm({ templates, action }: { templates: T[]; action: (fd
         <input type="hidden" name="template" value={tpl.id} />
         <div className="grid gap-4 sm:grid-cols-2">
           {templates.map((t) => (
-            <button type="button" key={t.id} onClick={() => pick(t)} className={`sf-card text-left transition ${tpl.id === t.id ? "ring-2 ring-indigo-500" : "hover:border-slate-300"}`}>
-              <div className="flex gap-1.5">
-                <span className="h-6 w-6 rounded-md" style={{ background: t.theme.primary }} />
-                <span className="h-6 w-6 rounded-md" style={{ background: t.theme.accent }} />
-                <span className="h-6 w-6 rounded-md" style={{ background: t.theme.dark }} />
+            <div role="button" tabIndex={0} key={t.id} onClick={() => pick(t)} onKeyDown={(e) => e.key === "Enter" && pick(t)} className={`sf-card cursor-pointer text-left transition ${tpl.id === t.id ? "ring-2 ring-indigo-500" : "hover:border-slate-300"}`}>
+              {t.id !== "vierge" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={t.preview} alt="" className="aspect-[16/10] w-full rounded-lg object-cover" />
+              ) : (
+                <div className="flex aspect-[16/10] w-full items-center justify-center rounded-lg bg-slate-100 text-3xl text-slate-400">＋</div>
+              )}
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <div className="font-semibold">{t.name}</div>
+                <div className="flex gap-1"><span className="h-4 w-4 rounded" style={{ background: t.theme.primary }} /><span className="h-4 w-4 rounded" style={{ background: t.theme.accent }} /></div>
               </div>
-              <div className="mt-3 font-semibold">{t.name}</div>
               <div className="text-xs text-slate-500">{t.sector}</div>
               <p className="mt-2 text-sm text-slate-600">{t.description}</p>
               <div className="mt-3 flex flex-wrap gap-1">
                 {t.pages.map((p) => <span key={p} className="sf-badge bg-slate-100 text-slate-600">{p}</span>)}
               </div>
-            </button>
+              {t.id !== "vierge" && <a href={`/studio/templates/${t.id}`} target="_blank" onClick={(e) => e.stopPropagation()} className="mt-3 inline-block text-sm font-semibold text-indigo-600 hover:underline">👁 Visualiser ce modèle</a>}
+            </div>
           ))}
         </div>
         <div className="mt-6 flex justify-end">

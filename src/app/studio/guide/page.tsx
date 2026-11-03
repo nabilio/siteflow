@@ -44,6 +44,7 @@ export default async function GuidePage() {
 
       <section className="sf-card space-y-3">
         <h2 className="text-lg font-semibold">Les modèles disponibles</h2>
+        <p className="text-sm text-slate-600">Chaque modèle est un site complet (pages, produits, actualités, visuels). Visualisez-les dans <a className="text-indigo-600 underline" href="/studio/templates">Modèles</a>, puis cliquez « Utiliser ce modèle » : tout reste modifiable.</p>
         <ul className="space-y-2 text-sm">
           {TEMPLATES.map((t) => <li key={t.id}><strong>{t.name}</strong> <span className="text-slate-500">({t.sector})</span> — {t.description}</li>)}
         </ul>
