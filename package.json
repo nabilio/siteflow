@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "node scripts/embed-migrations.mjs && prisma generate && next build",
+    "dev": "npm run css && next dev",
+    "build": "node scripts/embed-migrations.mjs && prisma generate && next build --webpack",
     "start": "node scripts/start.mjs",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
@@ -13,10 +13,16 @@
     "db:studio": "prisma studio",
     "site:export": "tsx scripts/export-site.ts",
     "site:import": "tsx scripts/import-site.ts",
-    "typecheck": "node scripts/embed-migrations.mjs && tsc --noEmit"
+    "typecheck": "node scripts/embed-migrations.mjs && tsc --noEmit",
+    "css": "tailwindcss -i src/styles/app.css -o src/app/globals.css --minify"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@types/adm-zip": "^0.5.8",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "adm-zip": "^0.6.1",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.15",
@@ -24,18 +30,13 @@
     "prisma": "^6.19.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@types/adm-zip": "^0.5.8",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "tailwindcss": "^4",
-    "tsx": "^4.23.15",
-    "typescript": "^5"
+    "@tailwindcss/cli": "^4.3.4",
+    "tsx": "^4.23.15"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
