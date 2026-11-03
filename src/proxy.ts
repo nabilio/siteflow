@@ -18,7 +18,7 @@ export function proxy(req: NextRequest) {
 
   const p = url.pathname;
   // Ressources partagées
-  if (p.startsWith("/api/") || p.startsWith("/uploads/") || p.startsWith("/sf-site/") || p.startsWith("/s/") || p === "/login" || p === "/logout") {
+  if (p.startsWith("/api/") || p.startsWith("/uploads/") || p.startsWith("/sf-site/") || p.startsWith("/s/") || p === "/login" || p === "/logout" || p === "/setup") {
     return NextResponse.next();
   }
 

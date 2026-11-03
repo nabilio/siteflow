@@ -1,5 +1,7 @@
 # Procédure — Site autonome (hébergement séparé chez le client)
 
+> **Le guide principal est désormais `docs/INSTALLATION-CHEZ-LE-CLIENT.md`** (aussi dans le Studio : Guide → Installer chez l'hébergeur du client). Ce document ne garde que les commandes SSH (import en ligne de commande, VPS).
+
 Cas d'usage : le client veut **son propre serveur** (il ne veut pas dépendre du Studio). On installe la même application en **mode site unique** : elle ne sert que son site et son administration sur `/admin`.
 
 Pré-requis : le domaine du client et soit un **hébergement Hostinger Node.js** (méthode simple, ci-dessous), soit un VPS Ubuntu.

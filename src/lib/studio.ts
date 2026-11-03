@@ -10,7 +10,7 @@ export async function requireSite(idParam: string) {
   let siteId = idParam;
   if (idParam === "_host") {
     const s = await resolveSiteByHost(host);
-    if (!s) redirect("/login");
+    if (!s) redirect(process.env.SINGLE_SITE_SLUG ? "/setup" : "/login");
     siteId = s.id;
   }
   if (!session) redirect(`/login?next=${encodeURIComponent(idParam === "_host" ? "/admin" : `/studio/sites/${idParam}`)}`);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireSite } from "@/lib/studio";
 import { setSiteStatusAction } from "@/lib/actions/sites";
+import { ClientConfig } from "./ClientConfig";
 
 async function resolveA(host: string) {
   try { return await dns.resolve4(host); } catch { return []; }
@@ -33,7 +34,7 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
 
   return (
     <main className="space-y-4">
-      <div><h1 className="text-2xl font-bold">Mise en ligne</h1><p className="text-sm text-slate-500">Procédure en 5 étapes. Chaque étape se vérifie automatiquement.</p></div>
+      <div><h1 className="text-2xl font-bold">Mise en ligne</h1><p className="text-sm text-slate-500">Mise en ligne sur le Studio FlowTech : 5 étapes vérifiées automatiquement. Le client a son propre hébergeur ? Voir le bloc « Livrer chez l’hébergeur du client » en bas de page.</p></div>
 
       <Step n={1} ok={!!domain} title="Définir le domaine du site">
         {domain ? <p>Domaine : <strong>{domain}</strong></p> : <p>Aucun domaine défini.</p>}
@@ -72,11 +73,7 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
         </ul>
       </Step>
 
-      <div className="sf-card">
-        <h2 className="font-semibold">Option : site autonome (hébergement séparé)</h2>
-        <p className="mt-2 text-sm text-slate-700">Si le client veut son propre hébergeur, exportez le site puis suivez <code>docs/PROCEDURE-SITE-AUTONOME.md</code> : la même application s'installe en « mode site unique » avec ce fichier.</p>
-        <a href={`/api/export?siteId=${site.id}`} className="sf-btn-secondary mt-3">⬇️ Exporter ce site (JSON + médias)</a>
-      </div>
+      <ClientConfig slug={site.slug} siteId={site.id} />
     </main>
   );
 }

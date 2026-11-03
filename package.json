@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npm run css && next dev",
-    "build": "node scripts/embed-migrations.mjs && prisma generate && next build --webpack",
+    "build": "node scripts/embed-migrations.mjs && node scripts/embed-docs.mjs && prisma generate && next build --webpack",
     "start": "node scripts/start.mjs",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
@@ -13,7 +13,7 @@
     "db:studio": "prisma studio",
     "site:export": "tsx scripts/export-site.ts",
     "site:import": "tsx scripts/import-site.ts",
-    "typecheck": "node scripts/embed-migrations.mjs && tsc --noEmit",
+    "typecheck": "node scripts/embed-migrations.mjs && node scripts/embed-docs.mjs && tsc --noEmit",
     "css": "tailwindcss -i src/styles/app.css -o src/app/globals.css --minify"
   },
   "dependencies": {

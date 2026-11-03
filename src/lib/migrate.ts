@@ -55,6 +55,12 @@ export async function ensureAdmin() {
 
 /** Met à jour les sites de démonstration des modèles (aperçu dans le Studio). */
 export async function syncTemplateDemos() {
+  const single = process.env.SINGLE_SITE_SLUG;
+  if (single) {
+    // Installation chez un client : uniquement son site (nettoie d'éventuelles démos créées avant l'activation du mode).
+    await prisma.site.deleteMany({ where: { slug: { startsWith: "tpl-", not: single } } });
+    return;
+  }
   const { ensureTemplateDemos } = await import("./template-build");
   await ensureTemplateDemos();
 }

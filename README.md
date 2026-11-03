@@ -11,7 +11,8 @@ Générateur et hébergeur de sites vitrines pour les clients de FlowTechnologie
 |---|---|
 | [docs/GUIDE-ADMIN.md](docs/GUIDE-ADMIN.md) | Admins : créer et livrer un site client |
 | [docs/PROCEDURE-DEPLOIEMENT.md](docs/PROCEDURE-DEPLOIEMENT.md) | Installation du Studio, mise en ligne d'un domaine, sauvegardes, dépannage |
-| [docs/PROCEDURE-SITE-AUTONOME.md](docs/PROCEDURE-SITE-AUTONOME.md) | Client qui veut son propre hébergement |
+| [docs/INSTALLATION-CHEZ-LE-CLIENT.md](docs/INSTALLATION-CHEZ-LE-CLIENT.md) | **Installer un site chez l'hébergeur du client** (Hostinger, cPanel, VPS) |
+| [docs/PROCEDURE-SITE-AUTONOME.md](docs/PROCEDURE-SITE-AUTONOME.md) | Commandes SSH complémentaires |
 
 ## Développement local
 ```bash

@@ -31,8 +31,14 @@ export default async function GuidePage() {
         </ol>
       </section>
 
+      <section className="sf-card space-y-3 border-2 border-indigo-200">
+        <h2 className="text-lg font-semibold">🏠 Installer le site chez l'hébergeur du client</h2>
+        <p className="text-sm text-slate-700">Le client a son propre hébergement (Hostinger, cPanel, VPS…) : guide complet pas à pas, avec la liste de vérification de compatibilité, trois méthodes d'installation, le premier lancement sans terminal, la recette de livraison et le dépannage.</p>
+        <a href="/studio/guide/installation" className="sf-btn-primary">Ouvrir le guide d'installation</a>
+      </section>
+
       <section className="sf-card space-y-3">
-        <h2 className="text-lg font-semibold">3. Mettre en ligne (5 min + propagation DNS)</h2>
+        <h2 className="text-lg font-semibold">3. Mettre en ligne (sur le Studio) (5 min + propagation DNS)</h2>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-slate-700">
           <li><strong>Paramètres → Domaine</strong> : saisir le domaine du client (ex : <code>www.entreprise.ma</code>).</li>
           <li>Chez le registrar du client : enregistrements A <code>@</code> et <code>www</code> → <code>{ip}</code>.</li>
@@ -61,7 +67,7 @@ export default async function GuidePage() {
       <section className="sf-card space-y-3">
         <h2 className="text-lg font-semibold">Questions fréquentes</h2>
         <dl className="space-y-3 text-sm">
-          <div><dt className="font-semibold">Le client veut son propre hébergement.</dt><dd className="text-slate-700">Mise en ligne → Exporter. Puis suivre <code>docs/PROCEDURE-SITE-AUTONOME.md</code> : l'application s'installe en mode site unique sur un hébergement Hostinger Node.js (ou tout serveur Node + MySQL).</dd></div>
+          <div><dt className="font-semibold">Le client veut son propre hébergement.</dt><dd className="text-slate-700">Mise en ligne → Exporter, puis suivre le <a className="text-indigo-600 underline" href="/studio/guide/installation">guide d'installation chez le client</a>.</dd></div>
           <div><dt className="font-semibold">Un bloc n'apparaît pas sur le site.</dt><dd className="text-slate-700">Les blocs Produits, Actualités, Galerie et Équipe sont masqués automatiquement s'ils sont vides. Ajoutez du contenu.</dd></div>
           <div><dt className="font-semibold">Le domaine affiche « Aucun site configuré ».</dt><dd className="text-slate-700">Le domaine saisi dans Paramètres doit correspondre exactement (avec ou sans www, les deux fonctionnent).</dd></div>
           <div><dt className="font-semibold">Le client a oublié son mot de passe.</dt><dd className="text-slate-700">Site → Accès → Modifier → saisir un nouveau mot de passe.</dd></div>

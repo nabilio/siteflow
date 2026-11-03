@@ -25,6 +25,16 @@ export default async function SitePage({ params, searchParams }: Props) {
   const site = await getSite();
   if (!site) {
     const host = await currentHost();
+    if (process.env.SINGLE_SITE_SLUG) {
+      return (
+        <main className="flex min-h-screen items-center justify-center bg-slate-100 p-6 text-center">
+          <div className="sf-card max-w-md">
+            <h1 className="text-xl font-bold">Installation en cours</h1>
+            <p className="mt-2 text-sm text-slate-600">L'application est bien installée. Dernière étape : <a className="text-indigo-600 underline" href="/setup">importer le site</a> (connexion avec le compte administrateur).</p>
+          </div>
+        </main>
+      );
+    }
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-100 p-6 text-center">
         <div className="sf-card max-w-md">
