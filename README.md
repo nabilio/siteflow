@@ -4,7 +4,7 @@ Générateur et hébergeur de sites vitrines pour les clients de FlowTechnologie
 
 - **Studio** (`/studio`) : création de sites par modèle, éditeur de pages par blocs, produits, actualités/salons, médias, messages, paramètres, accès, mise en ligne guidée.
 - **Sites clients** : un domaine par site, servis par la même application (multi-sites). Export possible en « site autonome » (mode site unique sur un autre serveur).
-- **Stack** : Next.js 16 (App Router) · Prisma · MySQL/MariaDB · Tailwind 4 · PM2 + Nginx sur VPS Hostinger · GitHub Actions.
+- **Stack** : Next.js 16 (App Router) · Prisma · MySQL/MariaDB · Tailwind 4 · hébergement mutualisé Hostinger (Node.js, déploiement Git) · variante VPS.
 
 ## Documentation
 | Document | Pour qui |
@@ -33,7 +33,7 @@ src/lib/blocks.ts          Catalogue des blocs (schéma = formulaire généré a
 src/lib/templates.ts       Modèles de sites (thème + pages par défaut)
 src/lib/actions/           Server actions (sites, pages, contenu)
 prisma/schema.prisma       Modèle de données
-deploy/                    Scripts VPS (installation, ajout de domaine, mise à jour), Nginx
+deploy/                    Scripts de la variante VPS (voir docs/vps)
 scripts/                   Export / import d'un site
 ```
 

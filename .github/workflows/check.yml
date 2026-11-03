@@ -1,0 +1,21 @@
+name: Vérification SiteFlow
+
+# Le déploiement en production est fait par Hostinger (auto-déploiement Git, hébergement mutualisé).
+# Ce workflow ne fait que vérifier que le code compile. Variante VPS : voir docs/vps/PROCEDURE-VPS.md.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck

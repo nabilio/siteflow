@@ -2,7 +2,10 @@
 
 Cas d'usage : le client veut **son propre serveur** (il ne veut pas dépendre du Studio). On installe la même application en **mode site unique** : elle ne sert que son site et son administration sur `/admin`.
 
-Pré-requis : un VPS Ubuntu (Hostinger KVM 1 ou équivalent) avec un accès SSH root, et le domaine du client.
+Pré-requis : le domaine du client et soit un **hébergement Hostinger Node.js** (méthode simple, ci-dessous), soit un VPS Ubuntu.
+
+## 0. Sur un hébergement mutualisé Hostinger (méthode recommandée)
+Même procédure que `docs/PROCEDURE-DEPLOIEMENT.md` (partie A) avec un déploiement dédié au client : import Git de `nabilio/siteflow`, base MySQL propre, et ces variables : `DATABASE_URL`, `SESSION_SECRET`, `STUDIO_HOSTS` (vide ou domaine technique), `SINGLE_SITE_SLUG` = slug du site, `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`. Puis importer le zip (étape 1) via le Studio, ou à la main avec `npm run site:import`. Les étapes VPS ci-dessous ne concernent que les serveurs avec accès SSH.
 
 ## 1. Exporter le site depuis le Studio
 Studio → site → **Mise en ligne → Exporter ce site**. On obtient `siteflow-<slug>.zip` (contenu + médias).

@@ -60,7 +60,7 @@ export default async function GuidePage() {
       <section className="sf-card space-y-3">
         <h2 className="text-lg font-semibold">Questions fréquentes</h2>
         <dl className="space-y-3 text-sm">
-          <div><dt className="font-semibold">Le client veut son propre hébergement.</dt><dd className="text-slate-700">Mise en ligne → Exporter. Puis suivre <code>docs/PROCEDURE-SITE-AUTONOME.md</code> : l'application s'installe en mode site unique sur un VPS Hostinger (ou tout serveur Node + MySQL).</dd></div>
+          <div><dt className="font-semibold">Le client veut son propre hébergement.</dt><dd className="text-slate-700">Mise en ligne → Exporter. Puis suivre <code>docs/PROCEDURE-SITE-AUTONOME.md</code> : l'application s'installe en mode site unique sur un hébergement Hostinger Node.js (ou tout serveur Node + MySQL).</dd></div>
           <div><dt className="font-semibold">Un bloc n'apparaît pas sur le site.</dt><dd className="text-slate-700">Les blocs Produits, Actualités, Galerie et Équipe sont masqués automatiquement s'ils sont vides. Ajoutez du contenu.</dd></div>
           <div><dt className="font-semibold">Le domaine affiche « Aucun site configuré ».</dt><dd className="text-slate-700">Le domaine saisi dans Paramètres doit correspondre exactement (avec ou sans www, les deux fonctionnent).</dd></div>
           <div><dt className="font-semibold">Le client a oublié son mot de passe.</dt><dd className="text-slate-700">Site → Accès → Modifier → saisir un nouveau mot de passe.</dd></div>

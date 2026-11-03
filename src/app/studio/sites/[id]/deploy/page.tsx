@@ -40,7 +40,7 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
         <Link href={`${base}/settings#domaine`} className="sf-btn-secondary !px-3 !py-1.5">Modifier dans Paramètres</Link>
       </Step>
 
-      <Step n={2} ok={dnsOk} title="Pointer le domaine vers le serveur (DNS)">
+      <Step n={2} ok={dnsOk} title="Pointer le domaine vers l'hébergement (DNS)">
         <p>Chez le registrar du client (Hostinger, OVH, Genious, …), créer deux enregistrements <strong>A</strong> :</p>
         <table className="w-full max-w-md text-left text-xs"><thead><tr className="text-slate-500"><th className="py-1">Type</th><th>Nom</th><th>Valeur</th><th>TTL</th></tr></thead><tbody>
           <tr><td className="py-1">A</td><td>@</td><td><code>{ip}</code></td><td>3600</td></tr>
@@ -51,10 +51,9 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
         )}
       </Step>
 
-      <Step n={3} ok={https} title="Activer le certificat HTTPS sur le serveur">
-        <p>Sur le VPS, une seule commande (à exécuter en SSH, ou demander au technicien) :</p>
-        <Cmd>{`sudo /opt/siteflow/deploy/add-domain.sh ${domain || "www.entreprise.ma"}`}</Cmd>
-        <p className="text-xs text-slate-500">Elle crée le certificat Let's Encrypt pour le domaine et le www, et recharge Nginx. À relancer si le domaine change. {domain && (https ? "✅ Le site répond en HTTPS." : "⏳ HTTPS pas encore actif.")}</p>
+      <Step n={3} ok={https} title="Rattacher le domaine à l'hébergement (hPanel)">
+        <p>Dans hPanel, ouvrir le site du Studio → <strong>Domains</strong> → ajouter <code>{domain || "www.entreprise.ma"}</code> comme <strong>domaine parqué (alias)</strong>. Le certificat HTTPS est généré automatiquement par Hostinger une fois le DNS propagé.</p>
+        <p className="text-xs text-slate-500">À refaire si le domaine change. {domain && (https ? "✅ Le site répond en HTTPS." : "⏳ HTTPS pas encore actif.")}</p>
       </Step>
 
       <Step n={4} ok={site.status === "PUBLISHED"} title="Publier le site">
