@@ -4,7 +4,26 @@ Cette procédure installe **le Studio** (une seule fois) puis explique comment *
 
 ---
 
-## A. Installation du Studio sur le VPS (une seule fois, ~15 min)
+## A0. Serveur Hostinger avec CloudPanel (votre cas : VPS 72.61.93.30)
+
+Le VPS utilise **CloudPanel** : il gère déjà Nginx, la base MySQL et les certificats des autres apps (ColiCo, SyndicFlow…). Il faut donc utiliser le script CloudPanel, qui **ne touche à aucune autre app** (le script `setup-vps.sh` refuse d'ailleurs de tourner ici).
+
+1. **DNS** (chez le registrar de `flowtechnologie.ma`) : enregistrement **A** `studio` → `72.61.93.30`.
+2. **hPanel → VPS → Terminal du navigateur** (ou SSH root), copier-coller :
+   ```bash
+   git clone https://github.com/nabilio/siteflow /opt/siteflow
+   sudo STUDIO_DOMAIN=studio.flowtechnologie.ma bash /opt/siteflow/deploy/setup-cloudpanel.sh
+   ```
+   Le script choisit un port libre (3020 si disponible), crée via CloudPanel le site reverse-proxy `studio.flowtechnologie.ma` et la base `siteflow`, construit l'application, la lance avec PM2 et demande le certificat HTTPS. À la fin il affiche le **mot de passe admin initial**.
+3. Ouvrir `https://studio.flowtechnologie.ma/login`, se connecter, changer le mot de passe (Utilisateurs → Modifier).
+4. **Chaque domaine client** : `sudo /opt/siteflow/deploy/add-domain.sh www.entreprise.ma` (crée le site reverse-proxy dans CloudPanel + certificat). Les clients apparaissent dans CloudPanel comme des sites « Reverse Proxy » pointant vers SiteFlow ; ne pas les supprimer depuis CloudPanel.
+5. Si, sur un domaine client, la page affiche « Aucun site n'est configuré pour ce domaine » avec un domaine reçu inattendu, c'est que le vhost ne transmet pas le nom de domaine d'origine : le champ « Domaine reçu » indique ce que l'application a vu.
+
+Les sections suivantes décrivent le cas d'un serveur vierge sans CloudPanel (`setup-vps.sh`).
+
+---
+
+## A. Installation du Studio sur un VPS vierge (une seule fois, ~15 min)
 
 ### Pré-requis
 - Un VPS Hostinger (KVM 1 suffit) sous **Ubuntu 22.04 ou 24.04**, avec accès SSH root.

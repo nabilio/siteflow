@@ -6,6 +6,13 @@
 # =============================================================================
 set -euo pipefail
 
+# Garde-fou : sur un serveur CloudPanel, ce script écraserait Nginx/MariaDB/UFW et casserait les autres sites.
+if command -v clpctl >/dev/null 2>&1; then
+  echo "⚠ CloudPanel détecté sur ce serveur : ce script est réservé aux serveurs vierges."
+  echo "  Utilisez :  sudo STUDIO_DOMAIN=studio.flowtechnologie.ma bash /opt/siteflow/deploy/setup-cloudpanel.sh"
+  exit 1
+fi
+
 APP_DIR="/opt/siteflow"
 REPO="${REPO:-https://github.com/nabilio/siteflow.git}"   # modifier si besoin
 STUDIO_DOMAIN="${STUDIO_DOMAIN:-studio.flowtechnologie.ma}"
