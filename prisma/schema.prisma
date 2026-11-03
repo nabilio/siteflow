@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN // FlowTechnologie : accès total au Studio
+  ADMIN      // Admin FlowTechnologie : gère les sites
+  CLIENT     // Client final : gère uniquement le contenu de son site
+}
+
+enum SiteStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PostKind {
+  NEWS
+  EVENT
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(ADMIN)
+  siteId       String?
+  site         Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+}
+
+model Site {
+  id            String     @id @default(cuid())
+  slug          String     @unique
+  name          String
+  tagline       String?
+  domain        String?    @unique
+  status        SiteStatus @default(DRAFT)
+  template      String     @default("distribution")
+  theme         Json
+  logoUrl       String?
+  faviconUrl    String?
+  contactEmail  String?
+  phone         String?
+  whatsapp      String?
+  address       String?
+  mapEmbedUrl   String?
+  socials       Json?
+  seoTitle      String?
+  seoDescription String?
+  footerText    String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  pages      Page[]
+  products   Product[]
+  categories Category[]
+  posts      Post[]
+  media      Media[]
+  messages   Message[]
+  users      User[]
+
+  @@index([domain])
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  slug      String   // "" = accueil
+  title     String
+  navLabel  String?
+  inNav     Boolean  @default(true)
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  blocks    Json     // tableau de blocs
+  seoTitle  String?
+  seoDescription String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([siteId, slug])
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  siteId   String
+  site     Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  name     String
+  slug     String
+  order    Int       @default(0)
+  products Product[]
+
+  @@unique([siteId, slug])
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  siteId      String
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name        String
+  slug        String
+  summary     String?
+  description String?   @db.Text
+  imageUrl    String?
+  images      Json?     // string[]
+  specs       Json?     // {label, value}[]
+  pdfUrl      String?
+  price       String?
+  featured    Boolean   @default(false)
+  published   Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([siteId, slug])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  kind      PostKind @default(NEWS)
+  title     String
+  slug      String
+  excerpt   String?
+  body      String?  @db.Text
+  imageUrl  String?
+  link      String?
+  location  String?
+  date      DateTime @default(now())
+  endDate   DateTime?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([siteId, slug])
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  url       String
+  name      String
+  mime      String
+  size      Int
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
